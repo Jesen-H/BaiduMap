@@ -1,8 +1,7 @@
 package com.hgeson.simplebaidumap;
 
-import android.Manifest;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -13,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
@@ -29,7 +27,6 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.hgeson.simplebaidumap.utils.AddressBean;
-import com.hgeson.simplebaidumap.utils.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +44,7 @@ public class MainActivity extends FragmentActivity {
     private AddressBean bean;
 
     public MyLocationListener myListener = new MyLocationListener();
+    private LocationClient mLocationClient;
 
     private BaseQuickAdapter<PoiInfo,BaseViewHolder> adapter;
 
@@ -70,7 +68,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void init() {
-        LocationClient mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient = new LocationClient(getApplicationContext());
         mLocationClient.registerLocationListener(myListener);
         LocationClientOption option = new LocationClientOption();
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);// 设置定位模式
@@ -206,6 +204,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mLocationClient.stop();
         if (geoCoder != null) {
             geoCoder.destroy();
         }
