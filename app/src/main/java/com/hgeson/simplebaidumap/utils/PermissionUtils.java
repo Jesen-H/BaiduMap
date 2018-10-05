@@ -41,7 +41,7 @@ public class PermissionUtils {
                         result = false;
                         for (int i = 0; i < permissions.length; i++) {
                             if (permissions[i].equals(permission.name)) {
-                                Toast.makeText(context, "您拒绝了" + description[i] + "权限", Toast.LENGTH_SHORT);
+                                Toast.makeText(context, "您拒绝了" + description[i] + "权限", Toast.LENGTH_SHORT).show();
                                 break;
                             }
                         }
@@ -49,7 +49,7 @@ public class PermissionUtils {
                         result = false;
                         for (int i = 0; i < permissions.length; i++) {
                             if (permissions[i].equals(permission.name)) {
-                                Toast.makeText(context, "您拒绝了" + description[i] + "权限,需要您到设置手动开启", Toast.LENGTH_SHORT);
+                                Toast.makeText(context, "您拒绝了" + description[i] + "权限,需要您到设置手动开启", Toast.LENGTH_SHORT).show();
                                 break;
                             }
                         }

@@ -34,6 +34,7 @@ import java.util.List;
 public class MainActivity extends FragmentActivity {
     private RecyclerView recyclerView;
     private TextView tv;
+    private TextView tv_search;
     private EditText searchAddressEt;
     private GeoCoder geoCoder;
 
@@ -64,7 +65,16 @@ public class MainActivity extends FragmentActivity {
     private void findView() {
         recyclerView = (RecyclerView) findViewById(R.id.address_recycler);
         tv = (TextView) findViewById(R.id.tv);
+        tv_search = (TextView) findViewById(R.id.tv_search);
         searchAddressEt = (EditText) findViewById(R.id.edit_search);
+
+        tv_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tv.setVisibility(View.GONE);
+                tv_search.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void init() {
@@ -99,6 +109,7 @@ public class MainActivity extends FragmentActivity {
                                 + "经度：" + bean.getLongitude() + "\n"
                                 + "纬度：" + bean.getLatitude();
                         tv.setVisibility(View.VISIBLE);
+                        tv_search.setVisibility(View.VISIBLE);
                         tv.setText(info);
                     }
                 });
@@ -180,7 +191,7 @@ public class MainActivity extends FragmentActivity {
                     for (int i = 0; i < list.size(); i++) {
                         poiInfos.add(list.get(i));
                         lists.add(list.get(i));
-                        Log.e("TAG", "name = " + list.get(i).name + "address" + list.get(i).address);
+                        Log.e("TAG", "name = " + list.get(i).name + ", address = " + list.get(i).address);
                     }
                     adapter.setNewData(poiInfos);
 //                    adapter.setItem(poiInfos);
