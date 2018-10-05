@@ -10,8 +10,9 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import io.reactivex.functions.Consumer;
 
 /**
- * Created by lingfeng on 2018/9/6.
- * Description：全局权限申请管理类
+ * @Describe：
+ * @Date：2018/10/5
+ * @Author：hgeson
  */
 public class PermissionUtils {
     private static Boolean result = true;
