@@ -1,6 +1,8 @@
 package com.hgeson.simplebaidumap;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +10,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,18 +42,36 @@ public class MainActivity extends FragmentActivity {
     private TextView tv;
     private TextView tv_search;
     private EditText searchAddressEt;
+    private ImageView loading;
     private GeoCoder geoCoder;
 
     private boolean isFirstLoc = true;
 
+    private BaseQuickAdapter<PoiInfo,BaseViewHolder> adapter;
     private List<PoiInfo> poiInfos = new ArrayList<>();
     private List<PoiInfo> lists = new ArrayList<>();
     private AddressBean bean;
+    private Animation animation;
 
-    public MyLocationListener myListener = new MyLocationListener();
+    private MyLocationListener myListener = new MyLocationListener();
     private LocationClient mLocationClient;
 
-    private BaseQuickAdapter<PoiInfo,BaseViewHolder> adapter;
+    private static final int HANDLER_SEND = 1;
+    private String info;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == HANDLER_SEND) {
+                tv.setText(info);
+                tv.setVisibility(View.VISIBLE);
+                tv_search.setVisibility(View.VISIBLE);
+                loading.clearAnimation();
+                loading.setVisibility(View.GONE);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +91,7 @@ public class MainActivity extends FragmentActivity {
         tv = (TextView) findViewById(R.id.tv);
         tv_search = (TextView) findViewById(R.id.tv_search);
         searchAddressEt = (EditText) findViewById(R.id.edit_search);
+        loading = (ImageView) findViewById(R.id.loading);
 
         tv_search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,10 +116,13 @@ public class MainActivity extends FragmentActivity {
         mLocationClient.setLocOption(option);
         mLocationClient.start(); // 调用此方法开始定位
 
+        animation = AnimationUtils.loadAnimation(this,R.anim.rotate);
+        animation.setInterpolator(new LinearInterpolator());
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter = new BaseQuickAdapter<PoiInfo, BaseViewHolder>(R.layout.item_new_info_address,null) {
             @Override
-            protected void convert(BaseViewHolder helper, final PoiInfo item) {
+            protected void convert(final BaseViewHolder helper, final PoiInfo item) {
                 helper.setText(R.id.choose_address_name,item.name)
                         .setText(R.id.choose_address,item.address)
                         .getView(R.id.select_address).setOnClickListener(new View.OnClickListener() {
@@ -103,14 +131,14 @@ public class MainActivity extends FragmentActivity {
                         bean = new AddressBean(item.city,item.name,item.address,item.phoneNum,item.uid,item.postCode,
                                 String.valueOf(item.location.longitude),String.valueOf(item.location.latitude));
 //                        String info = JSON.toJSONString(bean);
-                        String info = "城市：" + bean.getCity() + "\n"
+                        info = "城市：" + bean.getCity() + "\n"
                                 + "名称：" + bean.getName() + "\n"
                                 + "地址：" + bean.getAddress() + "\n"
                                 + "经度：" + bean.getLongitude() + "\n"
                                 + "纬度：" + bean.getLatitude();
-                        tv.setVisibility(View.VISIBLE);
-                        tv_search.setVisibility(View.VISIBLE);
-                        tv.setText(info);
+                        loading.setAnimation(animation);
+                        loading.setVisibility(View.VISIBLE);
+                        handler.sendEmptyMessageDelayed(HANDLER_SEND,2000);
                     }
                 });
             }
